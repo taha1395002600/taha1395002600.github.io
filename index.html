@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دعوت به استخر گل‌دشت 🏊‍♂️</title>
+<style>
+body {
+background: linear-gradient(135deg, #00b4d8, #0077b6);
+min-height: 100vh;
+margin: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+font-family: Tahoma, sans-serif;
+color: white;
+text-align: center;
+padding: 20px;
+}
+.card {
+background: rgba(255, 255, 255, 0.15);
+padding: 30px;
+border-radius: 20px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+backdrop-filter: blur(10px);
+border: 2px solid rgba(255,255,255,0.2);
+max-width: 450px;
+width: 100%;
+}
+h1 {
+font-size: 24px;
+margin-bottom: 15px;
+text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+p {
+font-size: 14px;
+margin-bottom: 10px;
+}
+.days-container {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+justify-content: center;
+margin-bottom: 15px;
+}
+.day-btn {
+background-color: rgba(255, 255, 255, 0.2);
+color: white;
+border: 1px solid rgba(255,255,255,0.4);
+padding: 8px 12px;
+font-size: 13px;
+border-radius: 8px;
+cursor: pointer;
+transition: 0.3s;
+}
+.day-btn.selected {
+background-color: #ffb703;
+color: #03045e;
+font-weight: bold;
+border-color: #ffd166;
+}
+.input-group {
+margin-bottom: 15px;
+}
+input[type="text"] {
+width: 90%;
+padding: 10px;
+border-radius: 8px;
+border: none;
+text-align: center;
+font-size: 14px;
+font-family: Tahoma, sans-serif;
+}
+.btn {
+background-color: #ffd166;
+color: #03045e;
+border: none;
+padding: 12px 25px;
+font-size: 16px;
+font-weight: bold;
+border-radius: 50px;
+cursor: pointer;
+box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+transition: 0.3s;
+}
+.btn:hover {
+background-color: #ffb703;
+transform: scale(1.05);
+}
+#result {
+margin-top: 20px;
+font-size: 16px;
+font-weight: bold;
+color: #ffd166;
+background: rgba(0, 0, 0, 0.2);
+padding: 10px;
+border-radius: 8px;
+display: none;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h1>سلام بابا! 👋<br>میشه بریم استخر گل‌دشت؟ 🏊‍♂️</h1>
+
+<p>روز مد نظرت رو انتخاب کن:</p>
+<div class="days-container" id="daysContainer">
+<button class="day-btn" onclick="selectDay(this)">شنبه</button>
+<button class="day-btn" onclick="selectDay(this)">یکشنبه</button>
+<button class="day-btn" onclick="selectDay(this)">دوشنبه</button>
+<button class="day-btn" onclick="selectDay(this)">سه‌شنبه</button>
+<button class="day-btn" onclick="selectDay(this)">چهارشنبه</button>
+<button class="day-btn" onclick="selectDay(this):">پنج‌شنبه</button>
+<button class="day-btn" onclick="selectDay(this)">جمعه</button>
+</div>
+
+<div class="input-group">
+<p>ساعت مد نظر (مثلاً ۱۶ تا ۱۸):</p>
+<input type="text" id="timeInput" placeholder="ساعت رو اینجا تایپ کن...">
+</div>
+
+<button class="btn" onclick="submitBooking()">ثبت درخواست 🚀</button>
+
+<div id="result"></div>
+</div>
+
+<script>
+let selectedDay = "";
+
+function selectDay(btn) {
+// حذف حالت انتخاب از بقیه دکمه‌ها
+let buttons = document.querySelectorAll('.day-btn');
+buttons.forEach(b => b.classList.remove('selected'));
+
+// انتخاب دکمه جاری
+btn.classList.add('selected');
+selectedDay = btn.innerText;
+}
+
+function submitBooking() {
+let timeVal = document.getElementById('timeInput').value;
+let resultDiv = document.getElementById('result');
+
+if (!selectedDay) {
+alert("لطفاً اول یک روز از هفته رو انتخاب کن!");
+return;
+}
+if (!timeVal) {
+alert("لطفاً ساعت رو هم تایپ کن!");
+return;
+}
+
+resultDiv.style.display = "block";
+resultDiv.innerHTML = `اوکی بابا! روز ${selectedDay} ساعت ${timeVal} بریم استخر گل‌دشت! 🏊‍♂️🔥`;
+}
+</script>
+
+</body>
+</html>
