@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taha iOS Simulator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+    }
+    body {
+      background: radial-gradient(circle at center, #1b1c2e, #090a10);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .iphone-frame {
+      width: 360px;
+      height: 730px;
+      background: #111218;
+      border-radius: 52px;
+      border: 6px solid #2d2e3d;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.8), inset 0 0 5px rgba(255,255,255,0.15);
+      padding: 12px;
+      position: relative;
+    }
+    .screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #182848, #2a0845);
+      border-radius: 42px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 16px 16px 16px;
+    }
+    .dynamic-island-container {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+    }
+    .dynamic-island {
+      width: 110px;
+      height: 28px;
+      background: black;
+      border-radius: 20px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      color: white;
+      font-size: 11px;
+    }
+    .dynamic-island.expanded {
+      width: 270px;
+      height: 55px;
+      border-radius: 28px;
+      padding: 0 16px;
+    }
+    .island-detail {
+      display: none;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dynamic-island.expanded .island-detail {
+      display: flex;
+    }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0 8px;
+      direction: ltr;
+    }
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px 10px;
+      margin-top: 25px;
+      direction: ltr;
+    }
+    .app-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+    .app-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      transition: transform 0.1s ease;
+    }
+    .app-icon:active {
+      transform: scale(0.85);
+    }
+    .app-label {
+      color: white;
+      font-size: 11px;
+      margin-top: 5px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+    .dock-container {
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-around;
+      direction: ltr;
+    }
+    .home-bar {
+      width: 125px;
+      height: 4px;
+      background: white;
+      border-radius: 10px;
+      margin: 8px auto 0 auto;
+    }
+    .window-modal {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #1e1e2f;
+      border-radius: 42px;
+      z-index: 90;
+      padding: 45px 14px 18px 14px;
+      flex-direction: column;
+      box-sizing: border-box;
+      direction: rtl;
+    }
+    .window-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .window-header button {
+      background: #ff5252;
+      border: none;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .code-box {
+      background: #0d0d15;
+      color: #7bed9f;
+      font-family: "Courier New", monospace;
+      font-size: 10.5px;
+      line-height: 1.4;
+      padding: 10px;
+      border-radius: 10px;
+      overflow-y: auto;
+      height: calc(100% - 40px);
+      white-space: pre;
+      direction: ltr;
+      text-align: left;
+      border: 1px solid #333;
+    }
+    .error-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: calc(100% - 40px);
+      color: #ff6b6b;
+      text-align: center;
+      gap: 12px;
+    }
+    .yeti-img-box {
+      width: 100%;
+      height: calc(100% - 40px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .yeti-img-box img {
+      max-width: 95%;
+      max-height: 75%;
+      border-radius: 18px;
+      border: 3px solid #00d2d3;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="iphone-frame">
+    <div class="screen">
+      
+      <div class="dynamic-island-container">
+        <div class="dynamic-island" id="island" onclick="toggleIsland()">
+          <span>⚡</span>
+          <div class="island-detail">
+            <span>طاها هکر کوچولو 🤖</span>
+            <span>🟢 100%</span>
+          </div>
+          <span style="color:#ff453a;">●</span>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <span id="clock">12:00</span>
+        <span>5G  🔋</span>
+      </div>
+
+      <div class="app-grid">
+        <div class="app-item" onclick="openWindow('win-yeti')">
+          <div class="app-icon" style="background: linear-gradient(135deg, #00c6ff, #0072ff);">🤖</div>
+          <span class="app-label">Yeti</span>
+        </div>
+        <div class="app-item" onclick="openWindow('win-cod')">
+          <div class="app-icon" style="background: #255C73;">🔢</div>
+          <span class="app-label">CoD Calc</span>
+        </div>
+        <div class="app-item" onclick="openWindow('win-matrix')">
+          <div class="app-icon" style="background: #10ac84;">🐍</div>
+          <span class="app-label">Matrix</span>
+        </div>
+        <div class="app-item" onclick="openWindow('win-github')">
+          <div class="app-icon" style="background: #24292e;">🐙</div>
+          <span class="app-label">GitHub</span>
+        </div>
+      </div>
+
+      <div class="window-modal" id="win-matrix">
+        <div class="window-header">
+          <span>🧠 Matrix Mind Game (پایتون)</span>
+          <button onclick="closeWindows()">✕</button>
+        </div>
+        <div class="code-box">"""
+====================================================================
+ پروژه بازی فکری ماتریکس (Matrix Mind Game)
+ نسخه: 1.0.0
+ زبان: پایتون (Python 3.x)
+ توضیحات: این برنامه یک بازی فکری کامل شامل جدول معما، تایمر،
+          سیستم امتیازدهی، راهنما و گرافیک کاربرپسند با Tkinter است.
+====================================================================
+"""
+
+import tkinter as tk
+from tkinter import messagebox, ttk
+import random
+import time
+
+class MatrixMindGame:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("بازی فکری ماتریکس - نسخه حرفه‌ای")
+        self.root.geometry("750x650")
+        self.root.config(bg="#1e1e2f")
+        self.root.resizable(False, False)
+
+        # متغیرهای وضعیت بازی
+        self.score = 0
+        self.time_left = 60
+        self.timer_running = False
+        self.current_level = "متوسط"
+        self.grid_size = 3  # ابعاد پیش‌فرض 3 در 3
+        self.cells = []
+        self.target_sum = 0
+        
+        # بارگذاری اجزای رابط کاربری
+        self.create_header()
+        self.create_game_board_frame()
+        self.create_control_panel()
+        
+        # شروع اولین بازی
+        self.start_new_game()
+
+    def create_header(self):
+        """ساخت بخش بالای صفحه (عنوان و امتیاز)"""
+        header_frame = tk.Frame(self.root, bg="#1e1e2f")
+        header_frame.pack(pady=15)
+
+        title_label = tk.Label(
+            header_frame, 
+            text="🧠 چالش فکری ماتریکس", 
+            font=("B Nazanin", 20, "bold"), 
+            bg="#1e1e2f", 
+            fg="#00d2d3"
+        )
+        title_label.pack()
+
+        # پنل نمایش امتیاز و زمان
+        stats_frame = tk.Frame(self.root, bg="#1e1e2f")
+        stats_frame.pack(pady=5)
+
+        self.score_label = tk.Label(
+            stats_frame, 
+            text="امتیاز: 0", 
+            font=("Arial", 12, "bold"), 
+            bg="#1e1e2f", 
+            fg="#ffffff"
+        )
+        self.score_label.pack(side=tk.LEFT, padx=20)
+
+        self.timer_label = tk.Label(
+            stats_frame, 
+            text="زمان: 60 ثانیه", 
+            font=("Arial", 12, "bold"), 
+            bg="#1e1e2f", 
+            fg="#ff6b6b"
+        )
+        self.timer_label.pack(side=tk.RIGHT, padx=20)
+
+    def create_game_board_frame(self):
+        """ساخت فریم اصلی صفحه بازی"""
+        self.board_frame = tk.Frame(self.root, bg="#2d2d44", bd=2, relief=tk.GROOVE)
+        self.board_frame.pack(pady=10)
+
+        # راهنمای قانون بازی روی صفحه
+        self.instruction_label = tk.Label(
+            self.root, 
+            text="قانون: مجموع اعداد هر سطر و ستون باید عدد هدف را بسازد!", 
+            font=("Arial", 11), 
+            bg="#1e1e2f", 
+            fg="#feca57"
+        )
+        self.instruction_label.pack(pady=5)
+
+    def create_control_panel(self):
+        """ساخت دکمه‌های کنترل بازی (ثبت، راهنما، جدید)"""
+        control_frame = tk.Frame(self.root, bg="#1e1e2f")
+        control_frame.pack(pady=20)
+
+        check_btn = tk.Button(
+            control_frame, 
+            text="بررسی پاسخ ✅", 
+            font=("Arial", 12, "bold"), 
+            bg="#10ac84", 
+            fg="white", 
+            padx=15, 
+            pady=5,
+            command=self.check_solution
+        )
+        check_btn.grid(row=0, column=0, padx=10)
+
+        hint_btn = tk.Button(
+            control_frame, 
+            text="راهنما 💡", 
+            font=("Arial", 12, "bold"), 
+            bg="#ff9f43", 
+            fg="white", 
+            padx=15, 
+            pady=5,
+            command=self.give_hint
+        )
+        hint_btn.grid(row=0, column=1, padx=10)
+
+        new_game_btn = tk.Button(
+            control_frame, 
+            text="بازی جدید 🔄", 
+            font=("Arial", 12, "bold"), 
+            bg="#54a0ff", 
+            fg="white", 
+            padx=15, 
+            pady=5,
+            command=self.start_new_game
+        )
+        new_game_btn.grid(row=0, column=2, padx=10)
+
+    def generate_puzzle(self):
+        """تولید معما و اعداد تصادفی برای جدول"""
+        for widget in self.board_frame.winfo_children():
+            widget.destroy()
+
+        self.cells = []
+        self.target_sum = random.randint(12, 25)
+        
+        self.instruction_label.config(
+            text=f"قانون: مجموع اعداد هر سطر و ستون باید برابر با '{self.target_sum}' باشد!"
+        )
+
+        for r in range(self.grid_size):
+            row_cells = []
+            for c in range(self.grid_size):
+                e = tk.Entry(
+                    self.board_frame, 
+                    font=("Arial", 18, "bold"), 
+                    width=4, 
+                    justify="center",
+                    bg="#ffffff",
+                    fg="#2f3640"
+                )
+                e.grid(row=r, column=c, padx=8, pady=8, ipady=8)
+                
+                if random.choice([True, False]):
+                    val = random.randint(1, 9)
+                    e.insert(0, str(val))
+                    e.config(state="disabled", disabledbackground="#dfe4ea", disabledforeground="#2f3640")
+                
+                row_cells.append(e)
+            self.cells.append(row_cells)
+
+    def start_new_game(self):
+        """شروع یا ریست کردن یک راند جدید از بازی"""
+        self.generate_puzzle()
+        self.time_left = 60
+        self.timer_running = True
+        self.update_timer()
+
+    def update_timer(self):
+        """مدیریت تایمر معکوس بازی"""
+        if self.timer_running and self.time_left > 0:
+            self.timer_label.config(text=f"زمان: {self.time_left} ثانیه")
+            self.time_left -= 1
+            self.root.after(1000, self.update_timer)
+        elif self.time_left == 0 and self.timer_running:
+            self.timer_running = False
+            messagebox.showinfo("پایان زمان!", "زمان شما به اتمام رسید رفیق! دوباره تلاش کن.")
+            self.start_new_game()
+
+    def check_solution(self):
+        """بررسی صحت پاسخ وارد شده توسط کاربر"""
+        try:
+            matrix = []
+            for r in range(self.grid_size):
+                row_vals = []
+                for c in range(self.grid_size):
+                    val_str = self.cells[r][c].get()
+                    if not val_str.isdigit():
+                        raise ValueError("لطفاً همه خانه‌ها را با اعداد معتبر پر کنید!")
+                    row_vals.append(int(val_str))
+                matrix.append(row_vals)
+
+            for r in range(self.grid_size):
+                if sum(matrix[r]) != self.target_sum:
+                    messagebox.showerror("خطا", f"مجموع اعداد سطر {r+1} اشتباه است!")
+                    return
+
+            for c in range(self.grid_size):
+                col_sum = sum(matrix[r][c] for r in range(self.grid_size))
+                if col_sum != self.target_sum:
+                    messagebox.showerror("خطا", f"مجموع اعداد ستون {c+1} اشتباه است!")
+                    return
+
+            self.timer_running = False
+            earned_score = 10 + self.time_left // 2
+            self.score += earned_score
+            self.score_label.config(text=f"امتیاز: {self.score}")
+            
+            messagebox.showinfo(
+                "آفرین رفیق! 🎉", 
+                f"معما با موفقیت حل شد!\nامتیاز کسب شده این مرحله: {earned_score}"
+            )
+            self.start_new_game()
+
+        except ValueError as e:
+            messagebox.showwarning("خطای ورودی", str(e))
+
+    def give_hint(self):
+        """سیستم راهنمای هوشمند برای کمک به بازیکن"""
+        self.score = max(0, self.score - 5)
+        self.score_label.config(text=f"امتیاز: {self.score}")
+        messagebox.showinfo(
+            "راهنمای ماتریکس 💡", 
+            f"یادآوری: هدف این است که جمع هر سطر و ستون عدد '{self.target_sum}' شود. به اعداد ثابت جدول دقت کن!"
+        )
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MatrixMindGame(root)
+    root.mainloop()</div>
+      </div>
+
+      <div class="window-modal" id="win-cod">
+        <div class="window-header">
+          <span>🔢 CoD Calculator (کیوی)</span>
+          <button onclick="closeWindows()">✕</button>
+        </div>
+        <div class="code-box">from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
+from kivy.utils import get_color_from_hex
+
+class CoDCalculator(App):
+    def build(self):
+        self.title = "COD MISSION: CALCULATE"
+        
+        c_black = get_color_from_hex("#255C73")
+        c_dark_gray = get_color_from_hex("#255C73")
+        c_green = get_color_from_hex("#255C73")
+        c_white = get_color_from_hex("#255C73")
+        
+        main_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        
+        self.display = TextInput(
+            text='',
+            multiline=False,
+            readonly=True,
+            halign='right',
+            font_size=42,
+            background_color=c_black,
+            foreground_color=c_green,
+            size_hint=(1, 0.25)
+        )
+        main_layout.add_widget(self.display)
+        
+        buttons_layout = GridLayout(cols=4, spacing=8, size_hint=(1, 0.75))
+        
+        buttons = [
+            'C', '(', ')', '/',
+            '7', '8', '9', '*',
+            '4', '5', '6', '-',
+            '1', '2', '3', '+',
+            '0', '.', '=', 'DEL'
+        ]
+        
+        for btn_text in buttons:
+            bg_color = c_green if btn_text == '=' else c_dark_gray
+            txt_color = c_black if btn_text == '=' else c_white
+            
+            btn = Button(
+                text=btn_text,
+                font_size=26,
+                bold=True,
+                background_normal='',
+                background_color=bg_color,
+                color=txt_color
+            )
+            btn.bind(on_press=self.on_button_press)
+            buttons_layout.add_widget(btn)
+            
+        main_layout.add_widget(buttons_layout)
+        return main_layout
+
+    def on_button_press(self, instance):
+        text = instance.text
+        
+        if text == 'C':
+            self.display.text = ''
+        elif text == 'DEL':
+            self.display.text = self.display.text[:-1]
+        elif text == '=':
+            try:
+                result = str(eval(self.display.text))
+                self.display.text = result
+            except Exception:
+                self.display.text = 'ERROR'
+        else:
+            if self.display.text == 'ERROR':
+                self.display.text = ''
+            self.display.text += text
+
+if __name__ == '__main__':
+    CoDCalculator().run()</div>
+      </div>
+
+      <div class="window-modal" id="win-github">
+        <div class="window-header">
+          <span>🐙 GitHub Actions Status</span>
+          <button onclick="closeWindows()">✕</button>
+        </div>
+        <div class="error-box">
+          <span style="font-size: 55px;">⚠️</span>
+          <h3 style="color:#ff4757;">GitHub Actions Failed!</h3>
+          <p style="font-size:12px; color:#a4b0be; line-height: 1.6;">
+            Error: Process completed with exit code 1.<br>
+            [طاها]: «دیگه کلافه شدم از این گیت‌هاب و اکشنز لعنتی! 🫠»
+          </p>
+          <div style="background:#2f3542; padding:10px 16px; border-radius:10px; font-size:11px; font-family:monospace; color:#ff6b81;">
+            Workflow run: ❌ buildozer-action failed
+          </div>
+        </div>
+      </div>
+
+      <div class="window-modal" id="win-yeti">
+        <div class="window-header">
+          <span>🤖 پروژه ربات یتی (Yeti Bot)</span>
+          <button onclick="closeWindows()">✕</button>
+        </div>
+        <div class="yeti-img-box">
+          <img src="photo_30775677999_x.webp" alt="Yeti Robot">
+          <p style="color:#00d2d3; font-weight:bold; font-size:13px;">شاسی و مدارهای ربات یتی طاها 🚀</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="dock-container">
+          <div class="app-item" onclick="openWindow('win-yeti')">
+            <div class="app-icon" style="background: #34c759; width:48px; height:48px;">📞</div>
+          </div>
+          <div class="app-item" onclick="openWindow('win-matrix')">
+            <div class="app-icon" style="background: #007aff; width:48px; height:48px;">🧭</div>
+          </div>
+          <div class="app-item" onclick="openWindow('win-cod')">
+            <div class="app-icon" style="background: #30d158; width:48px; height:48px;">💬</div>
+          </div>
+          <div class="app-item" onclick="openWindow('win-github')">
+            <div class="app-icon" style="background: #fa243c; width:48px; height:48px;">🎵</div>
+          </div>
+        </div>
+        <div class="home-bar"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('clock').innerText = `${h}:${m}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function toggleIsland() {
+      document.getElementById('island').classList.toggle('expanded');
+    }
+
+    function openWindow(id) {
+      closeWindows();
+      document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeWindows() {
+      const modals = document.querySelectorAll('.window-modal');
+      modals.forEach(m => m.style.display = 'none');
+    }
+  </script>
+</body>
+</html>
